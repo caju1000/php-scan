@@ -4,7 +4,7 @@ scaning of ports open in a host or network
 USAGE:
 php varrer.php <IP> 
 
-EXEMPLO:
+EXAMPLE:
 #Scaning a host
 varrer.php 192.168.10.10
   
