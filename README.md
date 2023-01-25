@@ -9,3 +9,7 @@ php varrer.php 192.168.10.10
   
 ## Example scaning a network
 php varrer.php 192.168.10.0
+
+
+## File wich the hosts alive
+hosts.txt
