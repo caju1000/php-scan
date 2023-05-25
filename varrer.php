@@ -1,12 +1,11 @@
 <?php 
-
 echo " ____  __ __  ____        _____   __   ____  ____  
 |    \|  |  ||    \      / ___/  /  ] /    ||    \ 
 |  o  )  |  ||  o  )    (   \_  /  / |  o  ||  _  |
 |   _/|  _  ||   _/      \__  |/  /  |     ||  |  |
 |  |  |  |  ||  |        /  \ /   \_ |  _  ||  |  |
 |  |  |  |  ||  |        \    \     ||  |  ||  |  |
-|__|  |__|__||__|         \___|\____||__|__||__|__|
+|__|  |__|__||__|         \___|\____||__|__||__|__|1.1
                                                    \n by CaJu\n\n";
 
 if ( empty($argv[1]) || $argv[1]=="-h"){
@@ -38,7 +37,7 @@ $rede =  $pri.".".$seg.".".$ter;
  * 135,136,137,138,139 - MICROSOFT NetBIOS TCP/UDP
  * 1900 - SSDP UDP
  * 3389 - RDP
- * 5353 - mDNS
+ * 5353 - DNS
  * 5900 - VNC
  * 1433 - MS-SQL
 * */
@@ -62,12 +61,38 @@ $file = fopen("hosts.txt","r") or die("Problema no arquivo hosts!");
 
 	while(! feof($file))
 	{	
+  //Get IP each line of file  
 	$line_ip = fgets($file);
+    // Jump IP 1    
+    if (trim($line_ip) == trim("$rede.1")){
+      continue;
+    }
+
 	$line_ip = trim($line_ip);
 	echo "\n\n CHECKING HOST $line_ip";
 	echo "\n---------------------------\n";
-	$cmd = "pwncat -z $line_ip $portas -v --banner";
-	echo shell_exec($cmd);
+	
+  foreach ($port_array as $service_port)
+  {
+    // Create a TCP/IP socket.   
+    $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    if ($socket === false) {
+      echo "Failed Creating socket $parametro...\n";
+    } 
+    // Try connect    
+    $result = @socket_connect($socket, $parametro, $service_port);
+    if ($result === false) {
+      continue;
+    } else {
+      // Get the name of services
+      $cmd = "cat /etc/services | grep -iw '$service_port' | cut -f 1";	    
+      echo "Port $service_port...OK - ";
+      echo shell_exec($cmd);
+    }
+    // Closing socket;
+    socket_close($socket);    
+  }
+  
 	echo "\n FINISHED. \n";
 	echo "============================== \n\n";
 	}
@@ -76,11 +101,35 @@ fclose($file);
 }else{
 	echo "\n CHECKING HOST $parametro \n";
     echo "----------------------------- \n";
-    $cmd = "pwncat -z $parametro $portas -v --banner";
-	echo shell_exec($cmd);
+    
+    foreach ($port_array as $service_port)
+    {
+      // Create a TCP/IP socket.   
+      $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+      if ($socket === false) {
+        echo "Failed Creating socket $parametro...\n";
+      } 
+      // Try connect      
+      $result = @socket_connect($socket, $parametro, $service_port);
+      if ($result === false) {
+        continue;
+      } else {
+        // Get the name of services
+        $cmd = "cat /etc/services | grep -iw '$service_port' | cut -f 1";	      
+        echo "Port $service_port...OK - ";        
+        echo shell_exec($cmd);
+      }
+      // Closing socket
+      socket_close($socket);      
+    }
+
+
     echo "\n FINISHED. \n";
     echo "================ \n\n";
 }
+
+
+
 
 ?>
 
