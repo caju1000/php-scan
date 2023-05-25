@@ -2,13 +2,10 @@
 Scaning of ports open in a host or network
 
 ## Installation
-sudo apt update -y
-sudo apt install fping
-sudo apt install pwncat
 sudo apt install php
 
 ## USAGE:
-php varrer.php IP
+php varrer.php <IP>
 
 ## Example scaning a host
 php varrer.php 192.168.10.10
